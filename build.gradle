@@ -10,29 +10,6 @@ base {
 	archivesName = project.archives_base_name
 }
 
-tasks.register("runClient2", JavaExec) {
-    group = "fabric"
-    description = "Run a second Minecraft client instance with a different working directory."
-
-    def runClientTask = tasks.named("runClient").get()
-
-    classpath = runClientTask.classpath
-    mainClass.set(runClientTask.mainClass.get())
-    jvmArgs = runClientTask.jvmArgs
-    args = runClientTask.args
-    systemProperties = runClientTask.systemProperties
-
-    // Define outro diretório de execução
-    workingDir = file("run2")
-
-    // Nome de usuário diferente
-    args "--username", "Teste2"
-
-	systemProperty "fabric.testclient.isclient", "1"
-}
-
-
-
 repositories {
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because

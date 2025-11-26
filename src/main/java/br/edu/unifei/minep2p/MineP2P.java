@@ -22,14 +22,8 @@ public class MineP2P implements ModInitializer {
 		WorldSwitcher.initializeEvents();
 
 		try {
-			NetworkServer netServer;
-			if (System.getProperty("fabric.testclient.isclient") == null) {
-				netServer = new NetworkServer(3031);
-				NetworkSender.PORT = 3030;
-			} else {
-				netServer = new NetworkServer(3030);
-				NetworkSender.PORT = 3031;
-			}
+			NetworkServer netServer = new NetworkServer(3030);
+			NetworkSender.PORT = 3030;
 
 			netServer.start();
 		} catch (Exception e) {
