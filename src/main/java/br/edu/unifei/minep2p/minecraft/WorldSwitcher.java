@@ -3,28 +3,36 @@ package br.edu.unifei.minep2p.minecraft;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ServerAddress;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.storage.LevelStorage;
 
+import java.net.InetAddress;
 import java.util.function.Consumer;
 
 public class WorldSwitcher {
-    private static volatile Runnable PENDING_ACTION = null;
+    private static volatile Runnable ON_CLIENT_JOIN = null;
+    private static volatile Runnable ON_DISCONNECT = null;
 
     public static void initializeEvents() {
         ClientPlayConnectionEvents.JOIN.register(WorldSwitcher::onClientJoin);
     }
 
     private static void onClientJoin(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
-        if (client.isIntegratedServerRunning() && PENDING_ACTION != null) {
+        if (ON_CLIENT_JOIN != null) {
             if (client.getNetworkHandler() != null) {
-                System.out.println("Tentando rodar PENDING_ACTION após JOIN do cliente.");
-                PENDING_ACTION.run();
-                PENDING_ACTION = null;
+                System.out.println("Tentando rodar ON_CLIENT_JOIN após JOIN do cliente.");
+                ON_CLIENT_JOIN.run();
+                ON_CLIENT_JOIN = null;
             }
         }
     }
@@ -36,13 +44,85 @@ public class WorldSwitcher {
             throw new RuntimeException("Você não está conectado a um mundo. ");
         }
 
-        ClientPlayNetworkHandler handler = client.getNetworkHandler();
-        handler.getConnection().disconnect(Text.literal("Desconectado automaticamente"));
+        client.execute(() -> {
+            ClientPlayNetworkHandler handler = client.getNetworkHandler();
+            handler.getConnection().disconnect(Text.literal("Desconectado automaticamente"));
+        });
+    }
+
+    public static void switchToServer(InetAddress ipTarget, int port) {
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        System.out.println("Client world: " + client.world);
+        System.out.println("Client network handler" + client.getNetworkHandler());
+        System.out.println("Client server: " + client.getServer());
+    
+        client.execute(() -> {
+            MultiplayerScreen multiplayerScreen = new MultiplayerScreen(null);
+            if (client.world != null) {
+                client.world.disconnect(Text.literal("Desconectado automaticamente"));
+                client.disconnectWithSavingScreen();
+                client.setScreen(multiplayerScreen);
+            }
+
+            TickScheduler.schedule(30, () -> {
+                String ipString = ipTarget.getHostAddress();
+                String addressString = ipString + ":" + port;
+    
+                multiplayerScreen.connect();
+                ServerInfo info = new ServerInfo(
+                    "LAN World",
+                    addressString,
+                    ServerInfo.ServerType.LAN
+                );
+                
+                info.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.PROMPT);
+                ServerAddress serverAddress = ServerAddress.parse(addressString);
+                Screen prev = new MultiplayerScreen(null);  
+                
+                try {
+                    System.out.println("Conectando a " + addressString);
+                    ConnectScreen.connect(prev, client, serverAddress, info, false, null);
+                } catch (RuntimeException e) {
+                    System.out.println("Erro ao conectar: " + e.getMessage() + "\n " + e.getStackTrace());
+                }
+            });
+
+        });
+
+        
+
+        // client.execute(() -> {
+        //     while (client.world != null || client.getNetworkHandler() != null || client.getServer() != null) {
+        //         Thread.yield();
+        //     }
+
+        //     String ipString = ipTarget.getHostAddress();
+        //     String addressString = ipString + ":" + port;
+
+        //     System.out.println("Conectando a " + addressString);
+
+        //     ServerInfo info = new ServerInfo(
+        //             "Servidor LAN",
+        //             addressString,
+        //             ServerInfo.ServerType.OTHER
+        //     );
+
+        //     info.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.PROMPT);
+        //     ServerAddress serverAddress = ServerAddress.parse(addressString);
+        //     Screen prev = new MultiplayerScreen(null);  
+
+        //     try {
+        //         ConnectScreen.connect(prev, client, serverAddress, info, false, null);
+        //     } catch (Exception e) {
+        //         System.out.println("Erro ao conectar: " + e.getMessage() + "\n " + e.getStackTrace());
+        //     }
+        // });
     }
 
     public static void loadWorld(String worldName, Runnable onLoadedCallback) {
         MinecraftClient client = MinecraftClient.getInstance();
-        PENDING_ACTION = onLoadedCallback;
+        ON_CLIENT_JOIN = onLoadedCallback;
 
         client.execute(() -> {
             try {

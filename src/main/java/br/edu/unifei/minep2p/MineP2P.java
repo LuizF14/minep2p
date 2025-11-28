@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import br.edu.unifei.minep2p.infrastructure.NetworkSender;
 import br.edu.unifei.minep2p.infrastructure.NetworkServer;
+import br.edu.unifei.minep2p.minecraft.TickScheduler;
 import br.edu.unifei.minep2p.minecraft.TransferHostCommand;
 import br.edu.unifei.minep2p.minecraft.WorldSwitcher;
 import br.edu.unifei.minep2p.service.controllers.TransferHostController;
@@ -20,6 +21,7 @@ public class MineP2P implements ModInitializer {
 		LOGGER.info("Hello Fabric world!");
 		new TransferHostCommand(new TransferHostController()).register();
 		WorldSwitcher.initializeEvents();
+		TickScheduler.init();
 
 		try {
 			NetworkServer netServer;

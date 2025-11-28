@@ -9,12 +9,25 @@ public class ConToMeMessage extends ProtocolMessage {
     private int port;
     private String worldName;
 
+    public int getPort() {
+        return port;
+    }
+
+    public String getWorldName() {
+        return worldName;
+    }
+
+    public InetAddress getNewHostAddress() {
+        return newHostAddress;
+    }
+
     public ConToMeMessage() {}
 
     public ConToMeMessage(ProtocolMessage baseMsg) throws IOException {
         super(baseMsg);
 
         this.newHostAddress = InetAddress.getByName(this.args.get(0));
+
         this.port = Integer.parseInt(this.args.get(1));
         this.worldName = this.args.get(2);
     }
@@ -30,11 +43,11 @@ public class ConToMeMessage extends ProtocolMessage {
     }
 
     public void serializeAndCopyTo(OutputStream out) throws IOException {
-        this.args.add(this.newHostAddress.toString());
+        this.args.add(this.newHostAddress.getHostAddress());
         this.args.add(String.valueOf(this.port));
         this.args.add(this.worldName);
 
-        System.out.println(this.args.toString());
+        // System.out.println(this.args.toString());
 
         super.serializeAndCopyTo(out);
     }
