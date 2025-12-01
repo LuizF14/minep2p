@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -21,7 +20,6 @@ import java.util.function.Consumer;
 
 public class WorldSwitcher {
     private static volatile Runnable ON_CLIENT_JOIN = null;
-    private static volatile Runnable ON_DISCONNECT = null;
 
     public static void initializeEvents() {
         ClientPlayConnectionEvents.JOIN.register(WorldSwitcher::onClientJoin);
@@ -89,35 +87,6 @@ public class WorldSwitcher {
             });
 
         });
-
-        
-
-        // client.execute(() -> {
-        //     while (client.world != null || client.getNetworkHandler() != null || client.getServer() != null) {
-        //         Thread.yield();
-        //     }
-
-        //     String ipString = ipTarget.getHostAddress();
-        //     String addressString = ipString + ":" + port;
-
-        //     System.out.println("Conectando a " + addressString);
-
-        //     ServerInfo info = new ServerInfo(
-        //             "Servidor LAN",
-        //             addressString,
-        //             ServerInfo.ServerType.OTHER
-        //     );
-
-        //     info.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.PROMPT);
-        //     ServerAddress serverAddress = ServerAddress.parse(addressString);
-        //     Screen prev = new MultiplayerScreen(null);  
-
-        //     try {
-        //         ConnectScreen.connect(prev, client, serverAddress, info, false, null);
-        //     } catch (Exception e) {
-        //         System.out.println("Erro ao conectar: " + e.getMessage() + "\n " + e.getStackTrace());
-        //     }
-        // });
     }
 
     public static void loadWorld(String worldName, Runnable onLoadedCallback) {
