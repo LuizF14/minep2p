@@ -7,10 +7,12 @@ import java.nio.file.Path;
 import br.edu.unifei.minep2p.service.messages.ConToMeMessage;
 import br.edu.unifei.minep2p.service.messages.ProtocolMessage;
 import br.edu.unifei.minep2p.service.messages.WorldMessage;
+import net.minecraft.server.MinecraftServer;
 import br.edu.unifei.minep2p.infrastructure.DirectoryZipper;
 import br.edu.unifei.minep2p.infrastructure.FileReceiver;
 import br.edu.unifei.minep2p.infrastructure.NetworkServer;
 import br.edu.unifei.minep2p.infrastructure.NetworkState;
+import br.edu.unifei.minep2p.minecraft.MineServerIP;
 import br.edu.unifei.minep2p.minecraft.WorldFiles;
 import br.edu.unifei.minep2p.minecraft.WorldSwitcher;
 
@@ -41,8 +43,8 @@ public class WorldHandler extends ConnectionHandler {
                 System.out.println("Carga do mundo completa. Tentando abrir LAN...");
                 WorldSwitcher.openToLan("Survival", port -> {
                     try {
-                        InetAddress localHost = InetAddress.getLocalHost();
-                        ConToMeMessage conmsg = ConToMeMessage.creatMessage(localHost, port, this.msg.getWorldName());
+                        InetAddress realIp = MineServerIP.getServerIP();
+                        ConToMeMessage conmsg = ConToMeMessage.creatMessage(realIp, port, this.msg.getWorldName());
                         serverState.setLastConToMeMessage(conmsg);
                         
                         System.out.println("LAN aberto com sucesso na porta: " + port);
