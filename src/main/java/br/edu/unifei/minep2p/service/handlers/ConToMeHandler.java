@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import br.edu.unifei.minep2p.infrastructure.NetworkServer;
+import br.edu.unifei.minep2p.minecraft.WorldSwitcher;
 import br.edu.unifei.minep2p.service.messages.ConToMeMessage;
 import br.edu.unifei.minep2p.service.messages.ProtocolMessage;
 
@@ -17,6 +18,8 @@ public class ConToMeHandler extends ConnectionHandler {
 
     @Override
     public void handle() throws IOException {
-        System.out.println("AAAAAAAAAAAaa" + this.msg.getHeader());
+        WorldSwitcher.switchToServer(msg.getNewHostAddress(), msg.getPort());
+        // WorldSwitcher.disconnect();
+        // WorldSwitcher.connectTo(msg.getNewHostAddress(), msg.getPort());
     }
 }
