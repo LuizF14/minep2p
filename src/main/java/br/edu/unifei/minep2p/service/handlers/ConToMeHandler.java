@@ -3,6 +3,7 @@ package br.edu.unifei.minep2p.service.handlers;
 import java.io.IOException;
 import java.net.Socket;
 
+import br.edu.unifei.minep2p.infrastructure.NetworkIP;
 import br.edu.unifei.minep2p.infrastructure.NetworkServer;
 import br.edu.unifei.minep2p.minecraft.WorldSwitcher;
 import br.edu.unifei.minep2p.service.messages.ConToMeMessage;
@@ -18,7 +19,9 @@ public class ConToMeHandler extends ConnectionHandler {
 
     @Override
     public void handle() throws IOException {
-        WorldSwitcher.switchToServer(msg.getNewHostAddress(), msg.getPort());
+        if (!msg.getNewHostAddress().equals(NetworkIP.getMyIP())) {
+            WorldSwitcher.switchToServer(msg.getNewHostAddress(), msg.getPort());
+        }
         // WorldSwitcher.disconnect();
         // WorldSwitcher.connectTo(msg.getNewHostAddress(), msg.getPort());
     }

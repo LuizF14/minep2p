@@ -27,6 +27,7 @@ public class ListPlayersHandler extends ConnectionHandler {
 
         for (InetAddress player : this.msg.players) {
             try {
+                System.out.println(player);
                 NetworkSender.send(conmsg, player);
             } catch (Exception e) {
                 throw new RuntimeException("Não consegui avisar o player: " + player.toString() + ", " + e.getMessage());
