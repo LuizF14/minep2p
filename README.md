@@ -1,3 +1,21 @@
+# MineP2P
+
+## Introdução 
+O MineP2P é um mod para Minecraft que altera o funcionamento tradicional do modo LAN. Em vez de encerrar o mundo quando o jogador anfitrião sai, o mod possibilita transferir a hospedagem do mundo para outro jogador conectado, permitindo que todos continuem jogando sem interrupções.
+
+A ideia surgiu para resolver uma limitação clássica do modo LAN: se o host sair, a sessão termina para todos. Com o MineP2P, o mundo é enviado dinamicamente para outro jogador, que assume automaticamente o papel de novo anfitrião. Isso torna a experiência de jogo muito mais fluida, especialmente em mundos cooperativos entre amigos que não querem depender de uma única máquina para manter a sessão viva.
+
+Atualmente o mod está em fase de testes, e a transferência precisa ser iniciada manualmente. Antes do anfitrião se desconectar, é necessário executar o comando no próprio Minecraft:
+```
+/transferhost <ip_destino>
+``` 
+
+Após isso, o mundo é transmitido para o jogador especificado, que ao receber os dados passa a hospedar a LAN.
+
+O objetivo final é construir um sistema totalmente automático, capaz de escolher o melhor host disponível e gerenciar transferências sem intervenção manual.
+
+O MineP2P pretende transformar o modo LAN em algo mais resiliente, cooperativo e realmente multijogador contínuo.
+
 ## Pré-requisitos
 
 Antes de rodar o projeto, você precisa instalar:
